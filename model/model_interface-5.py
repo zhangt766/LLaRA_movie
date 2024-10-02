@@ -108,11 +108,11 @@ class MInterface(pl.LightningModule):
             output = json.loads("{" + org_output.split("Output:")[1].split("{")[1].split("}")[0] + "}")
             sorted_items = sorted(output.items(), key=lambda item: item[1], reverse=True)
             # 获取分数最高的前5个键
-            top_5_idx = [int(re.findall(r'\d+', item[0])[0]) - 1 for item in sorted_items[:7]]
+            top_5_idx = [int(re.findall(r'\d+', item[0])[0]) - 1 for item in sorted_items[:5]]
             return top_5_idx
         except:
             print("bad format, cant decode")
-        return random.sample(range(10), 7)
+        return random.sample(range(10), 5)
 
     # tokenize
     def format_fn(self, input):
@@ -121,8 +121,8 @@ class MInterface(pl.LightningModule):
             similar_historys = [input["most_similar_seq_name"][idx] for idx in top_5_idx]
             similar_choices = [input["most_similar_seq_next_name"][idx] for idx in top_5_idx]
         else:
-            similar_historys = input["most_similar_seq_name"][:7]
-            similar_choices = input["most_similar_seq_next_name"][:7]
+            similar_historys = input["most_similar_seq_name"][:5]
+            similar_choices = input["most_similar_seq_next_name"][:5]
 
         demos = [
             reco_prompt_history.format_map({"i": i, "SimilarHistory": similar_history, "SimilarChoice": similar_choice})
